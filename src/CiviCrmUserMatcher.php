@@ -58,15 +58,12 @@ class CiviCrmUserMatcher implements CiviCrmUserMatcherInterface {
     // this will allow to simplifiy CiviCrmUserQueueItem constructor
     // and is way more predictable.
     // Get a connection to the CiviCRM database.
-    Database::setActiveConnection('civicrm');
-    $db = Database::getConnection();
+    $db = Database::getConnection('default','civicrm');
     // @todo check possible security issue here
     $query = $db->query("SELECT id, uf_id, uf_name, contact_id FROM {civicrm_uf_match} WHERE domain_id = :domain_id", [
       ':domain_id' => $this->matchFilter->getDomainId(),
     ]);
     $queryResult = $query->fetchAll();
-    // Switch back to the default database.
-    Database::setActiveConnection();
     foreach ($queryResult as $row) {
       $result[$row->contact_id] = [
         'uid' => $row->uf_id,
